@@ -13,6 +13,8 @@ import re
 import sys
 import threading
 import time
+import pkgutil
+import insights
 from subprocess import Popen, PIPE, STDOUT
 
 import yaml
@@ -230,6 +232,17 @@ def modify_config_file(updates):
     write_to_disk(constants.default_conf_file, content=status['output'])
 
 
+def _insights_runner_version():
+    '''
+    Return the version of the insights-client-runner module
+    '''
+    try:
+        return pkgutil.get_data(insights.__name__, "client/VERSION").strip().decode("utf-8")
+    except:
+        # TODO: remove bare except
+        return ''
+
+
 def get_version_info():
     '''
     Get the insights client and core versions for archival
@@ -242,6 +255,7 @@ def get_version_info():
     version_info = {}
     version_info['core_version'] = '%s-%s' % (package_info['VERSION'], package_info['RELEASE'])
     version_info['client_version'] = client_version
+    version_info['runner_version'] = _insights_runner_version()
     return version_info
 
 
